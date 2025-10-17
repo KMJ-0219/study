@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>세특 관리 시스템 - 홈</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
             margin: 0;
@@ -18,7 +19,6 @@
             color: #333;
         }
 
-        /* 헤더 스타일 */
         header {
             background: white;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -39,7 +39,6 @@
             margin-bottom: 1rem;
         }
 
-        /* GNB 스타일 */
         nav {
             display: flex;
             gap: 0.5rem;
@@ -67,7 +66,6 @@
             color: white;
         }
 
-        /* 메인 컨텐츠 영역 */
         .container {
             max-width: 1200px;
             margin: 2rem auto;
@@ -77,36 +75,35 @@
         .welcome-section {
             background: white;
             border-radius: 20px;
-            padding: 3rem;
+            padding: 2rem;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
 
         .welcome-section h2 {
             color: #667eea;
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
         }
 
         .welcome-section p {
             color: #666;
-            font-size: 1.2rem;
-            line-height: 1.8;
+            font-size: 1.1rem;
+            line-height: 1.6;
         }
 
-        /* 그리드 시스템 */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .card {
             background: white;
             border-radius: 15px;
-            padding: 2rem;
+            padding: 1.5rem;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
@@ -119,73 +116,443 @@
 
         .card h3 {
             color: #667eea;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
+            margin-bottom: 0.8rem;
+            font-size: 1.3rem;
         }
 
         .card p {
             color: #666;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        .dashboard-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .dashboard-header h2 {
+            color: #667eea;
+            font-size: 1.8rem;
+        }
+
+        .dday-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 26px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #667eea;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        .dashboard-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .calendar-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .calendar-header h3 {
+            color: #667eea;
+            font-size: 1.4rem;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .calendar-nav button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+
+        .calendar-nav button:hover {
+            background: #5568d3;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-weight: bold;
+            color: #667eea;
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .calendar-day {
+            background: white;
+            border-radius: 8px;
+            padding: 0.5rem;
+            min-height: 100px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .calendar-day:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .calendar-day.other-month {
+            opacity: 0.3;
+        }
+
+        .day-number {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+        }
+
+        .badge-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.2rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .badge {
+            font-size: 0.65rem;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .badge.deadline {
+            background: #ff9800;
+            color: white;
+        }
+
+        .badge.promise {
+            background: #9c27b0;
+            color: white;
+        }
+
+        .badge.dday {
+            background: #f44336;
+            color: white;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            margin-bottom: 0.2rem;
+            font-size: 0.75rem;
+        }
+
+        .task-item input[type="checkbox"] {
+            cursor: pointer;
+        }
+
+        .task-item.completed {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .info-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .info-section h3 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h3 {
+            color: #667eea;
+            font-size: 1.5rem;
+        }
+
+        .close-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .task-record {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .task-record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.5rem;
+        }
+
+        .task-record h4 {
+            color: #333;
+            font-size: 1.1rem;
+            flex: 1;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-save {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-cancel {
+            background: #999;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .task-info {
+            color: #666;
+            font-size: 0.9rem;
             line-height: 1.6;
         }
 
-        /* 반응형 디자인 */
-        @media (max-width: 768px) {
-            .header-content {
-                padding: 1rem;
-            }
+        .task-info p {
+            margin-bottom: 0.3rem;
+        }
 
-            h1 {
-                font-size: 1.5rem;
-            }
+        .accordion {
+            margin-top: 0.5rem;
+        }
 
-            nav {
-                gap: 0.3rem;
-            }
+        .accordion-toggle {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            width: 100%;
+            text-align: left;
+        }
 
-            nav a {
-                padding: 0.5rem 1rem;
-                font-size: 0.9rem;
-            }
+        .accordion-content {
+            display: none;
+            margin-top: 0.5rem;
+            padding: 0.8rem;
+            background: white;
+            border-radius: 6px;
+        }
 
-            .container {
-                padding: 0 1rem;
-                margin: 1rem auto;
-            }
+        .accordion-content.active {
+            display: block;
+        }
 
-            .welcome-section {
-                padding: 2rem 1.5rem;
-            }
+        .add-task-btn {
+            width: 100%;
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
 
-            .welcome-section h2 {
-                font-size: 1.8rem;
-            }
+        .form-group {
+            margin-bottom: 1rem;
+        }
 
-            .welcome-section p {
-                font-size: 1rem;
-            }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.3rem;
+            color: #333;
+            font-weight: 500;
+        }
 
-            .grid {
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .category-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+            margin-top: 0.3rem;
+        }
+
+        .category-pill {
+            background: #667eea;
+            color: white;
+            padding: 0.3rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 968px) {
+            .dashboard-content {
                 grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .card {
-                padding: 1.5rem;
             }
         }
 
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 1.2rem;
+        @media (max-width: 768px) {
+            .calendar-day {
+                min-height: 80px;
+                padding: 0.3rem;
             }
 
-            nav a {
-                padding: 0.4rem 0.8rem;
-                font-size: 0.85rem;
+            .task-item {
+                font-size: 0.7rem;
             }
 
-            .welcome-section h2 {
-                font-size: 1.5rem;
+            .modal-content {
+                margin: 10% auto;
+                padding: 1.5rem;
             }
         }
     </style>
@@ -225,11 +592,520 @@
                 <p>새로운 세특 주제를 추가합니다</p>
             </div>
         </div>
+
+        <div class="dashboard-section">
+            <div class="dashboard-header">
+                <h2>📅 과제 대시보드</h2>
+                <div class="dday-toggle">
+                    <span>D-Day 표시</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="ddayToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="dashboard-content">
+                <div class="calendar-section">
+                    <div class="calendar-header">
+                        <h3 id="currentMonth"></h3>
+                        <div class="calendar-nav">
+                            <button onclick="prevMonth()">◀ 이전</button>
+                            <button onclick="nextMonth()">다음 ▶</button>
+                        </div>
+                    </div>
+                    <div class="calendar-grid" id="calendarGrid"></div>
+                </div>
+
+                <div class="info-section">
+                    <h3>📌 다가오는 일정</h3>
+                    <div id="upcomingTasks"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalDate"></h3>
+                <button class="close-btn" onclick="closeModal()">닫기</button>
+            </div>
+            <div id="taskList"></div>
+            <button class="add-task-btn" onclick="showAddTaskForm()">+ 일정 추가하기</button>
+        </div>
     </div>
 
     <script>
-        // 페이지 로드 시 애니메이션
+        const SUPABASE_URL = 'https://sgzgblsirnorodulhper.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNnemdibHNpcm5vcm9kdWxocGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA2ODU2MDAsImV4cCI6MjA3NjI2MTYwMH0.nfFzi2lSvplXs7JoIMC-jdvqmxj_NpvVMYspPfGZWQs';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let currentDate = new Date();
+        let tasks = {};
+        let selectedDate = null;
+
+        async function loadTasks(year, month) {
+            const startDate = new Date(year, month, 1);
+            const endDate = new Date(year, month + 1, 0);
+            
+            const { data, error } = await supabase
+                .from('task')
+                .select('*')
+                .gte('date', startDate.toISOString().split('T')[0])
+                .lte('date', endDate.toISOString().split('T')[0]);
+            
+            if (error) {
+                console.error('Error loading tasks:', error);
+                return;
+            }
+            
+            tasks = {};
+            data.forEach(task => {
+                const dateKey = task.date;
+                if (!tasks[dateKey]) tasks[dateKey] = [];
+                tasks[dateKey].push(task);
+            });
+            
+            renderCalendar();
+        }
+
+        function determineTaskType(categories) {
+            if (!categories || categories.length === 0) return 'normal';
+            
+            const categoryStr = categories.join(',').toLowerCase();
+            
+            if (/과제|수행|숙제|일/.test(categoryStr)) return 'task';
+            if (/일정|약속/.test(categoryStr)) return 'promise';
+            
+            return 'normal';
+        }
+
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            document.getElementById('currentMonth').textContent = 
+                `${year}년 ${month + 1}월`;
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const daysInPrevMonth = new Date(year, month, 0).getDate();
+            
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+            
+            const dayHeaders = ['일', '월', '화', '수', '목', '금', '토'];
+            dayHeaders.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'calendar-day-header';
+                header.textContent = day;
+                grid.appendChild(header);
+            });
+            
+            const ddayEnabled = document.getElementById('ddayToggle').checked;
+            let bossDate = null;
+            
+            if (ddayEnabled) {
+                for (let dateKey in tasks) {
+                    const dateTasks = tasks[dateKey];
+                    const hasBoss = dateTasks.some(task => {
+                        const isBoss = task.category && task.category.some(cat => 
+                            cat === '시험') && !task.is_completed;
+                        return isBoss;
+                    });
+                    if (hasBoss) {
+                        bossDate = new Date(dateKey);
+                        break;
+                    }
+                }
+            }
+            
+            for (let i = firstDay - 1; i >= 0; i--) {
+                const day = daysInPrevMonth - i;
+                const cell = document.createElement('div');
+                cell.className = 'calendar-day other-month';
+                cell.innerHTML = `<div class="day-number">${day}</div>`;
+                grid.appendChild(cell);
+            }
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const cell = document.createElement('div');
+                cell.className = 'calendar-day';
+                
+                const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dayTasks = tasks[dateKey] || [];
+                
+                let html = `<div class="day-number">${day}</div>`;
+                
+                const badges = [];
+                const hasTask = dayTasks.some(t => determineTaskType(t.category) === 'task');
+                const hasPromise = dayTasks.some(t => determineTaskType(t.category) === 'promise');
+                
+                if (hasTask) badges.push('<span class="badge deadline">마감</span>');
+                if (hasPromise) badges.push('<span class="badge promise">약속</span>');
+                
+                if (bossDate && ddayEnabled) {
+                    const currentDay = new Date(year, month, day);
+                    const diffTime = bossDate - currentDay;
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    
+                    if (diffDays >= 0) {
+                        badges.push(`<span class="badge dday">D-${diffDays}</span>`);
+                    }
+                }
+                
+                if (badges.length > 0) {
+                    html += `<div class="badge-container">${badges.join('')}</div>`;
+                }
+                
+                dayTasks.forEach(task => {
+                    const completed = task.is_completed ? 'completed' : '';
+                    html += `
+                        <div class="task-item ${completed}">
+                            <input type="checkbox" ${task.is_completed ? 'checked' : ''} 
+                                   onchange="toggleTaskComplete('${task.id}', this.checked)"
+                                   onclick="event.stopPropagation()">
+                            <span>${task.name}</span>
+                        </div>
+                    `;
+                });
+                
+                cell.innerHTML = html;
+                cell.onclick = () => openDayModal(dateKey);
+                grid.appendChild(cell);
+            }
+            
+            const remainingCells = 42 - (firstDay + daysInMonth);
+            for (let i = 1; i <= remainingCells; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'calendar-day other-month';
+                cell.innerHTML = `<div class="day-number">${i}</div>`;
+                grid.appendChild(cell);
+            }
+            
+            loadUpcomingTasks();
+        }
+
+        async function toggleTaskComplete(taskId, completed) {
+            const { error } = await supabase
+                .from('task')
+                .update({ is_completed: completed })
+                .eq('id', taskId);
+            
+            if (error) {
+                console.error('Error updating task:', error);
+                return;
+            }
+            
+            loadTasks(currentDate.getFullYear(), currentDate.getMonth());
+        }
+
+        function openDayModal(dateKey) {
+            selectedDate = dateKey;
+            const modal = document.getElementById('taskModal');
+            const dayTasks = tasks[dateKey] || [];
+            
+            document.getElementById('modalDate').textContent = 
+                new Date(dateKey).toLocaleDateString('ko-KR', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric',
+                    weekday: 'long'
+                });
+            
+            const taskListHtml = dayTasks.map(task => createTaskRecordHtml(task)).join('');
+            document.getElementById('taskList').innerHTML = taskListHtml || '<p style="text-align:center;color:#999;">등록된 일정이 없습니다.</p>';
+            
+            modal.style.display = 'block';
+        }
+
+        function createTaskRecordHtml(task) {
+            const categories = task.category ? task.category.map(c => 
+                `<span class="category-pill">${c}</span>`).join('') : '';
+            
+            return `
+                <div class="task-record" id="record-${task.id}">
+                    <div class="task-record-header">
+                        <h4>${task.name}</h4>
+                        <div class="task-actions">
+                            <button class="btn btn-edit" onclick="editTask('${task.id}')">수정</button>
+                            <button class="btn btn-delete" onclick="deleteTask('${task.id}')">삭제</button>
+                        </div>
+                    </div>
+                    <div class="task-info">
+                        <p><strong>날짜:</strong> ${task.date}</p>
+                        <p><strong>카테고리:</strong> <div class="category-pills">${categories || '없음'}</div></p>
+                        <p><strong>완료 여부:</strong> ${task.is_completed ? '✅ 완료' : '⏳ 미완료'}</p>
+                        
+                        <div class="accordion">
+                            <button class="accordion-toggle" onclick="toggleAccordion('content-${task.id}')">
+                                📝 내용 보기
+                            </button>
+                            <div class="accordion-content" id="content-${task.id}">
+                                ${task.content || '내용 없음'}
+                            </div>
+                        </div>
+                        
+                        <div class="accordion">
+                            <button class="accordion-toggle" onclick="toggleAccordion('etc-${task.id}')">
+                                📎 기타 정보
+                            </button>
+                            <div class="accordion-content" id="etc-${task.id}">
+                                ${task.etc || '기타 정보 없음'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleAccordion(id) {
+            event.stopPropagation();
+            const content = document.getElementById(id);
+            content.classList.toggle('active');
+        }
+
+        async function deleteTask(taskId) {
+            if (!confirm('정말 이 일정을 삭제하시겠습니까?')) return;
+            
+            const { error } = await supabase
+                .from('task')
+                .delete()
+                .eq('id', taskId);
+            
+            if (error) {
+                console.error('Error deleting task:', error);
+                alert('삭제 중 오류가 발생했습니다.');
+                return;
+            }
+            
+            await loadTasks(currentDate.getFullYear(), currentDate.getMonth());
+            openDayModal(selectedDate);
+        }
+
+        function editTask(taskId) {
+            const task = Object.values(tasks).flat().find(t => t.id === taskId);
+            if (!task) return;
+            
+            const recordDiv = document.getElementById(`record-${taskId}`);
+            const categoriesStr = task.category ? task.category.join(', ') : '';
+            
+            recordDiv.innerHTML = `
+                <div class="form-group">
+                    <label>이름</label>
+                    <input type="text" id="edit-name-${taskId}" value="${task.name}">
+                </div>
+                <div class="form-group">
+                    <label>날짜</label>
+                    <input type="date" id="edit-date-${taskId}" value="${task.date}">
+                </div>
+                <div class="form-group">
+                    <label>카테고리 (쉼표로 구분)</label>
+                    <input type="text" id="edit-category-${taskId}" value="${categoriesStr}">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="edit-completed-${taskId}" ${task.is_completed ? 'checked' : ''}>
+                        완료
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>내용</label>
+                    <textarea id="edit-content-${taskId}">${task.content || ''}</textarea>
+                </div>
+                <div class="form-group">
+                    <label>기타</label>
+                    <textarea id="edit-etc-${taskId}">${task.etc || ''}</textarea>
+                </div>
+                <div class="task-actions">
+                    <button class="btn btn-save" onclick="saveTask('${taskId}')">저장</button>
+                    <button class="btn btn-cancel" onclick="openDayModal('${selectedDate}')">취소</button>
+                </div>
+            `;
+        }
+
+        async function saveTask(taskId) {
+            const name = document.getElementById(`edit-name-${taskId}`).value;
+            const date = document.getElementById(`edit-date-${taskId}`).value;
+            const categoryStr = document.getElementById(`edit-category-${taskId}`).value;
+            const categories = categoryStr ? categoryStr.split(',').map(c => c.trim()).filter(c => c) : [];
+            const isCompleted = document.getElementById(`edit-completed-${taskId}`).checked;
+            const content = document.getElementById(`edit-content-${taskId}`).value;
+            const etc = document.getElementById(`edit-etc-${taskId}`).value;
+            
+            const type = determineTaskType(categories);
+            
+            const { error } = await supabase
+                .from('task')
+                .update({
+                    name: name || '',
+                    date,
+                    category: categories,
+                    type,
+                    is_completed: isCompleted,
+                    content: content || '',
+                    etc: etc || ''
+                })
+                .eq('id', taskId);
+            
+            if (error) {
+                console.error('Error updating task:', error);
+                alert('저장 중 오류가 발생했습니다.');
+                return;
+            }
+            
+            await loadTasks(currentDate.getFullYear(), currentDate.getMonth());
+            openDayModal(date);
+        }
+
+        function showAddTaskForm() {
+            const formHtml = `
+                <div class="task-record" id="add-task-form">
+                    <h4 style="margin-bottom: 1rem; color: #667eea;">새 일정 추가</h4>
+                    <div class="form-group">
+                        <label>이름</label>
+                        <input type="text" id="new-name">
+                    </div>
+                    <div class="form-group">
+                        <label>날짜</label>
+                        <input type="date" id="new-date" value="${selectedDate}">
+                    </div>
+                    <div class="form-group">
+                        <label>카테고리 (쉼표로 구분)</label>
+                        <input type="text" id="new-category" placeholder="예: 과제, 수행평가">
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="new-completed">
+                            완료
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>내용</label>
+                        <textarea id="new-content"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>기타</label>
+                        <textarea id="new-etc"></textarea>
+                    </div>
+                    <div class="task-actions">
+                        <button class="btn btn-save" onclick="createTask()">저장</button>
+                        <button class="btn btn-cancel" onclick="cancelAddTask()">취소</button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('taskList').insertAdjacentHTML('beforeend', formHtml);
+            document.querySelector('.add-task-btn').style.display = 'none';
+        }
+
+        function cancelAddTask() {
+            document.getElementById('add-task-form').remove();
+            document.querySelector('.add-task-btn').style.display = 'block';
+        }
+
+        async function createTask() {
+            const name = document.getElementById('new-name').value;
+            const date = document.getElementById('new-date').value;
+            const categoryStr = document.getElementById('new-category').value;
+            const categories = categoryStr ? categoryStr.split(',').map(c => c.trim()).filter(c => c) : [];
+            const isCompleted = document.getElementById('new-completed').checked;
+            const content = document.getElementById('new-content').value;
+            const etc = document.getElementById('new-etc').value;
+            
+            if (!name) {
+                alert('이름을 입력해주세요.');
+                return;
+            }
+            
+            const type = determineTaskType(categories);
+            
+            const { error } = await supabase
+                .from('task')
+                .insert([{
+                    name: name || '',
+                    date,
+                    category: categories,
+                    type,
+                    is_completed: isCompleted,
+                    content: content || '',
+                    etc: etc || ''
+                }]);
+            
+            if (error) {
+                console.error('Error creating task:', error);
+                alert('생성 중 오류가 발생했습니다.');
+                return;
+            }
+            
+            await loadTasks(currentDate.getFullYear(), currentDate.getMonth());
+            openDayModal(date);
+        }
+
+        function closeModal() {
+            document.getElementById('taskModal').style.display = 'none';
+        }
+
+        function prevMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            loadTasks(currentDate.getFullYear(), currentDate.getMonth());
+        }
+
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            loadTasks(currentDate.getFullYear(), currentDate.getMonth());
+        }
+
+        async function loadUpcomingTasks() {
+            const today = new Date();
+            const weekLater = new Date(today);
+            weekLater.setDate(weekLater.getDate() + 7);
+            
+            const { data, error } = await supabase
+                .from('task')
+                .select('*')
+                .gte('date', today.toISOString().split('T')[0])
+                .lte('date', weekLater.toISOString().split('T')[0])
+                .eq('is_completed', false)
+                .order('date', { ascending: true })
+                .limit(5);
+            
+            if (error) {
+                console.error('Error loading upcoming tasks:', error);
+                return;
+            }
+            
+            const upcomingDiv = document.getElementById('upcomingTasks');
+            if (!data || data.length === 0) {
+                upcomingDiv.innerHTML = '<p style="color:#999;text-align:center;">다가오는 일정이 없습니다</p>';
+                return;
+            }
+            
+            const html = data.map(task => `
+                <div style="background:#fff;padding:0.8rem;border-radius:8px;margin-bottom:0.5rem;border-left:3px solid #667eea;">
+                    <div style="font-weight:600;color:#333;margin-bottom:0.3rem;">${task.name}</div>
+                    <div style="font-size:0.85rem;color:#666;">${task.date}</div>
+                </div>
+            `).join('');
+            
+            upcomingDiv.innerHTML = html;
+        }
+
+        document.getElementById('ddayToggle').addEventListener('change', () => {
+            renderCalendar();
+        });
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('taskModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
+            loadTasks(currentDate.getFullYear(), currentDate.getMonth());
+            
             const cards = document.querySelectorAll('.card');
             cards.forEach((card, index) => {
                 setTimeout(() => {
