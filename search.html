@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>세특 관리 시스템 - 주제 찾기</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* 헤더 스타일 */
+        header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        /* GNB 스타일 */
+        nav {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #555;
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            background: #f8f9fa;
+        }
+
+        nav a:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        nav a.active {
+            background: #667eea;
+            color: white;
+        }
+
+        /* 컨테이너 */
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* 검색 섹션 */
+        .search-section {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .search-filters {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #555;
+            white-space: nowrap;
+        }
+
+        /* 토글 스위치 */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #667eea;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* 카테고리 선택 */
+        select {
+            padding: 0.7rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+            min-width: 200px;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* 검색 입력 */
+        .search-input-wrapper {
+            position: relative;
+            flex: 1;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.7rem 1rem 0.7rem 2.5rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.8rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        /* 캐러셀 그리드 */
+        .carousel-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .use-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            width: fit-content;
+        }
+
+        .use-badge.used {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .use-badge.unused {
+            background: #fce4ec;
+            color: #c2185b;
+        }
+
+        .card-info {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .card-info strong {
+            color: #333;
+        }
+
+        /* 페이지네이션 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .pagination button {
+            padding: 0.7rem 1.2rem;
+            border: none;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination .page-info {
+            padding: 0.7rem 1.2rem;
+            background: white;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #667eea;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* 로딩 및 메시지 */
+        .message {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .message h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .message p {
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .error-message {
+            color: #c2185b;
+            background: #fce4ec;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 1200px) {
+            .carousel-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            nav a {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .container {
+                padding: 0 1rem;
+                margin: 1rem auto;
+            }
+
+            .search-filters {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .carousel-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .search-section {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.2rem;
+            }
+
+            nav a {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.85rem;
+            }
+
+            .carousel-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .content-card {
+                padding: 1.2rem;
+            }
+
+            .card-title {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>HOMEPAGE</h1>
+            <nav>
+                <a href="index.html">홈페이지</a>
+                <a href="profile.html">프로파일링</a>
+                <a href="search.html" class="active">주제 찾기</a>
+                <a href="add_content.html">주제 추가</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 검색 섹션 -->
+        <div class="search-section">
+            <div class="search-filters">
+                <div class="filter-group">
+                    <label>사용여부</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="useToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="filter-group">
+                    <label for="categorySelect">카테고리:</label>
+                    <select id="categorySelect">
+                        <option value="">전체</option>
+                    </select>
+                </div>
+
+                <div class="search-input-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" class="search-input" placeholder="제목으로 검색...">
+                </div>
+            </div>
+        </div>
+
+        <!-- 캐러셀 그리드 -->
+        <div id="carouselGrid" class="carousel-grid">
+            <!-- 카드들이 동적으로 추가됩니다 -->
+        </div>
+
+        <!-- 메시지 영역 -->
+        <div id="messageArea" class="message" style="display: none;">
+            <h2>로딩 중...</h2>
+            <p id="messageDetail"></p>
+        </div>
+
+        <!-- 페이지네이션 -->
+        <div class="pagination">
+            <button id="prevBtn" onclick="goToPrevPage()">이전</button>
+            <span class="page-info">
+                <span id="currentPage">1</span> / <span id="totalPages">1</span>
+            </span>
+            <button id="nextBtn" onclick="goToNextPage()">다음</button>
+        </div>
+    </div>
+
+    <script>
+        // Supabase 초기화
+        const SUPABASE_URL = 'https://sgzgblsirnorodulhper.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNnemdibHNpcm5vcm9kdWxocGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA2ODU2MDAsImV4cCI6MjA3NjI2MTYwMH0.nfFzi2lSvplXs7JoIMC-jdvqmxj_NpvVMYspPfGZWQs';
+        
+        let supabase;
+        try {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            console.log('Supabase 클라이언트 초기화 성공');
+        } catch (error) {
+            console.error('Supabase 초기화 실패:', error);
+            showMessage('Supabase 초기화 실패', error.message);
+        }
+
+        // 전역 변수
+        let allContents = [];
+        let filteredContents = [];
+        let currentPage = 1;
+        const itemsPerPage = 12; // 4열 × 3행
+
+        // 페이지 로드 시 데이터 가져오기
+        async function loadContents() {
+            try {
+                showMessage('데이터를 불러오는 중...', 'Supabase에 연결 중입니다.');
+                
+                console.log('Supabase URL:', SUPABASE_URL);
+                console.log('데이터 조회 시작...');
+
+                const { data, error } = await supabase
+                    .from('content')
+                    .select('*')
+                    .order('id', { ascending: false });
+
+                console.log('응답 데이터:', data);
+                console.log('에러:', error);
+
+                if (error) {
+                    console.error('Supabase 에러 상세:', error);
+                    throw new Error(`Supabase 에러: ${error.message || JSON.stringify(error)}`);
+                }
+
+                allContents = data || [];
+                console.log(`총 ${allContents.length}개의 데이터를 불러왔습니다.`);
+                
+                if (allContents.length === 0) {
+                    showMessage('데이터가 없습니다', 'content 테이블에 데이터를 추가해주세요.');
+                    return;
+                }
+
+                // 카테고리 목록 추출 및 셀렉트박스 채우기
+                populateCategories();
+                
+                // 초기 필터링 및 렌더링
+                applyFilters();
+                hideMessage();
+                
+            } catch (error) {
+                console.error('데이터 로딩 에러:', error);
+                showMessage('데이터 로딩 실패', `에러: ${error.message}`);
+            }
+        }
+
+        // 카테고리 목록 추출 및 셀렉트박스 채우기
+        function populateCategories() {
+            const categories = new Set();
+            allContents.forEach(content => {
+                if (content.category) {
+                    // PostgreSQL 배열을 JavaScript 배열로 처리
+                    const cats = Array.isArray(content.category) 
+                        ? content.category 
+                        : [content.category];
+                    cats.forEach(cat => {
+                        if (cat && cat.trim()) {
+                            categories.add(cat.trim());
+                        }
+                    });
+                }
+            });
+
+            const select = document.getElementById('categorySelect');
+            const currentValue = select.value;
+            
+            // 기존 옵션 제거 (전체 제외)
+            while (select.options.length > 1) {
+                select.remove(1);
+            }
+
+            // 새 옵션 추가
+            Array.from(categories).sort().forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                select.appendChild(option);
+            });
+
+            select.value = currentValue;
+            console.log('카테고리 목록:', Array.from(categories));
+        }
+
+        // 필터 적용
+        function applyFilters() {
+            const useToggle = document.getElementById('useToggle').checked;
+            const selectedCategory = document.getElementById('categorySelect').value;
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+
+            console.log('필터 적용:', { useToggle, selectedCategory, searchText });
+
+            filteredContents = allContents.filter(content => {
+                // 사용여부 필터 (토글 ON시 사용여부가 false인 것만)
+                if (useToggle && content.use !== false) {
+                    return false;
+                }
+
+                // 카테고리 필터
+                if (selectedCategory) {
+                    const categories = Array.isArray(content.category)
+                        ? content.category
+                        : [content.category];
+                    if (!categories.some(cat => cat && cat.trim() === selectedCategory)) {
+                        return false;
+                    }
+                }
+
+                // 검색 필터 (증분 검색)
+                if (searchText && !(content.name || '').toLowerCase().includes(searchText)) {
+                    return false;
+                }
+
+                return true;
+            });
+
+            console.log(`필터링 결과: ${filteredContents.length}개`);
+
+            currentPage = 1;
+            renderPage();
+        }
+
+        // 페이지 렌더링
+        function renderPage() {
+            const grid = document.getElementById('carouselGrid');
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageContents = filteredContents.slice(startIndex, endIndex);
+
+            if (pageContents.length === 0) {
+                grid.innerHTML = '';
+                showMessage('검색 결과가 없습니다', '다른 검색어나 필터를 시도해보세요.');
+                return;
+            }
+
+            hideMessage();
+
+            grid.innerHTML = pageContents.map(content => {
+                // 카테고리 처리
+                const categories = Array.isArray(content.category)
+                    ? content.category.filter(c => c).join(', ')
+                    : content.category || '-';
+                
+                // 사용여부 처리
+                const isUsed = content.use === true;
+                const useBadgeClass = isUsed ? 'used' : 'unused';
+                const useBadgeText = isUsed ? '사용함' : '미사용';
+
+                return `
+                    <div class="content-card" onclick="goToDetail(${content.id})">
+                        <div class="card-title">${content.name || '제목 없음'}</div>
+                        <span class="use-badge ${useBadgeClass}">${useBadgeText}</span>
+                        <div class="card-info">
+                            <strong>카테고리:</strong> ${categories}
+                        </div>
+                        <div class="card-info">
+                            <strong>기타:</strong> ${content.additional || '-'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            updatePagination();
+        }
+
+        // 페이지네이션 업데이트
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredContents.length / itemsPerPage);
+            document.getElementById('currentPage').textContent = currentPage;
+            document.getElementById('totalPages').textContent = totalPages || 1;
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage >= totalPages;
+        }
+
+        // 페이지 이동
+        function goToPrevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderPage();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function goToNextPage() {
+            const totalPages = Math.ceil(filteredContents.length / itemsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderPage();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // 상세페이지로 이동
+        function goToDetail(id) {
+            window.location.href = `detail_content.html?id=${id}`;
+        }
+
+        // 메시지 표시/숨김
+        function showMessage(text, detail = '') {
+            const messageArea = document.getElementById('messageArea');
+            messageArea.querySelector('h2').textContent = text;
+            document.getElementById('messageDetail').textContent = detail;
+            messageArea.style.display = 'block';
+            document.getElementById('carouselGrid').style.display = 'none';
+        }
+
+        function hideMessage() {
+            document.getElementById('messageArea').style.display = 'none';
+            document.getElementById('carouselGrid').style.display = 'grid';
+        }
+
+        // 이벤트 리스너
+        document.getElementById('useToggle').addEventListener('change', applyFilters);
+        document.getElementById('categorySelect').addEventListener('change', applyFilters);
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+
+        // 초기 로드
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('페이지 로드 완료');
+            loadContents();
+        });
+    </script>
+</body>
+</html>

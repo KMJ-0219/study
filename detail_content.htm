@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>세특 관리 시스템 - 주제 세부 설명</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        /* 헤더 스타일 */
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        /* GNB 스타일 */
+        nav {
+            margin-top: 1rem;
+        }
+
+        .gnb {
+            display: flex;
+            gap: 0.5rem;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+
+        .gnb li a {
+            display: block;
+            padding: 0.7rem 1.5rem;
+            background-color: #34495e;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            font-weight: 500;
+        }
+
+        .gnb li a:hover {
+            background-color: #4a5f7f;
+        }
+
+        /* 메인 컨텐츠 */
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .content-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .content-title {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .info-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #2c3e50;
+            display: inline-block;
+            min-width: 100px;
+        }
+
+        .info-value {
+            color: #555;
+            display: inline;
+        }
+
+        .info-row {
+            margin-bottom: 0.8rem;
+            line-height: 1.6;
+        }
+
+        .category-tags, .concept-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .tag {
+            background-color: #3498db;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+        }
+
+        /* 아코디언 스타일 */
+        .accordion {
+            margin-top: 1.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            background-color: #ecf0f1;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s;
+        }
+
+        .accordion-header:hover {
+            background-color: #d5dbdb;
+        }
+
+        .accordion-header.active {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .accordion-icon {
+            transition: transform 0.3s;
+        }
+
+        .accordion-header.active .accordion-icon {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background-color: #f8f9fa;
+        }
+
+        .accordion-content.open {
+            max-height: 1000px;
+            padding: 1.5rem;
+        }
+
+        .usage-info, .detail-info {
+            line-height: 1.8;
+        }
+
+        .usage-info .info-row {
+            margin-bottom: 1rem;
+        }
+
+        .close-btn {
+            background-color: #95a5a6;
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .close-btn:hover {
+            background-color: #7f8c8d;
+        }
+
+        /* 버튼 스타일 */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-edit {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background-color: #e67e22;
+        }
+
+        .btn-delete {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background-color: #c0392b;
+        }
+
+        .file-link {
+            display: inline-block;
+            background-color: #27ae60;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 0.5rem;
+            transition: background-color 0.3s;
+        }
+
+        .file-link:hover {
+            background-color: #229954;
+        }
+
+        /* 모달 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .modal-body {
+            margin-bottom: 1.5rem;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .modal-btn-cancel {
+            background-color: #95a5a6;
+            color: white;
+        }
+
+        .modal-btn-cancel:hover {
+            background-color: #7f8c8d;
+        }
+
+        .modal-btn-confirm {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .modal-btn-confirm:hover {
+            background-color: #c0392b;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.2rem;
+            color: #7f8c8d;
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .gnb {
+                flex-direction: column;
+            }
+
+            .gnb li a {
+                text-align: center;
+            }
+
+            header {
+                padding: 1rem;
+            }
+
+            .content-container {
+                padding: 1.5rem;
+            }
+
+            .content-title {
+                font-size: 1.5rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .modal-content {
+                margin: 30% auto;
+                width: 95%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.3rem;
+            }
+
+            .gnb li a {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .content-container {
+                padding: 1rem;
+            }
+
+            .content-title {
+                font-size: 1.3rem;
+            }
+
+            .info-label {
+                display: block;
+                margin-bottom: 0.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>주제 세부 설명</h1>
+            <nav>
+                <ul class="gnb">
+                    <li><a href="index.html">홈페이지</a></li>
+                    <li><a href="profile.html">프로파일링</a></li>
+                    <li><a href="search.html">주제 찾기</a></li>
+                    <li><a href="add_content.html">주제 추가</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div id="loadingMessage" class="loading">데이터를 불러오는 중...</div>
+        <div id="contentContainer" class="content-container" style="display: none;">
+            <h2 class="content-title" id="contentTitle">제목</h2>
+            
+            <div class="info-section">
+                <div class="info-row">
+                    <span class="info-label">카테고리:</span>
+                    <div class="category-tags" id="categoryTags"></div>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">상위개념:</span>
+                    <div class="concept-tags" id="highContentTags"></div>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">연관주제:</span>
+                    <div class="concept-tags" id="relevanceContentTags"></div>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">사용여부:</span>
+                    <span class="info-value" id="useStatus">-</span>
+                </div>
+            </div>
+
+            <!-- 사용 정보 아코디언 -->
+            <div class="accordion" id="usageAccordion">
+                <div class="accordion-header" onclick="toggleAccordion('usageAccordion')">
+                    <span>사용 정보 보기</span>
+                    <span class="accordion-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="usage-info">
+                        <div class="info-row">
+                            <span class="info-label">사용학년학기:</span>
+                            <span class="info-value" id="usTime">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">사용과목:</span>
+                            <span class="info-value" id="usSubject">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">세특 내용:</span>
+                            <p class="info-value" id="usContentM" style="margin-top: 0.5rem; white-space: pre-wrap;">-</p>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">연관세특주제:</span>
+                            <div class="concept-tags" id="relevanceUsContentTags" style="margin-top: 0.5rem;"></div>
+                        </div>
+                    </div>
+                    <button class="close-btn" onclick="toggleAccordion('usageAccordion')">닫기</button>
+                </div>
+            </div>
+
+            <!-- 상세 보기 아코디언 -->
+            <div class="accordion" id="detailAccordion">
+                <div class="accordion-header" onclick="toggleAccordion('detailAccordion')">
+                    <span>상세 보기</span>
+                    <span class="accordion-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="detail-info">
+                        <div class="info-row" id="fileRow" style="display: none;">
+                            <span class="info-label">파일:</span>
+                            <a href="#" id="fileLink" class="file-link" target="_blank">파일 열기</a>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">내용:</span>
+                            <p class="info-value" id="detailContent" style="margin-top: 0.5rem; white-space: pre-wrap;">-</p>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">사이트:</span>
+                            <p class="info-value" id="linkSite" style="margin-top: 0.5rem; word-break: break-all;">-</p>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">기타:</span>
+                            <p class="info-value" id="additional" style="margin-top: 0.5rem; white-space: pre-wrap;">-</p>
+                        </div>
+                    </div>
+                    <button class="close-btn" onclick="toggleAccordion('detailAccordion')">닫기</button>
+                </div>
+            </div>
+
+            <!-- 액션 버튼 -->
+            <div class="action-buttons">
+                <button class="btn btn-edit" onclick="editContent()">수정</button>
+                <button class="btn btn-delete" onclick="showDeleteModal()">삭제</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- 삭제 확인 모달 -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">⚠️ 삭제 확인</div>
+            <div class="modal-body">
+                정말로 이 주제를 삭제하시겠습니까?<br>
+                삭제된 데이터는 복구할 수 없습니다.
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" onclick="closeDeleteModal()">취소</button>
+                <button class="modal-btn modal-btn-confirm" onclick="deleteContent()">삭제</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Supabase 초기화
+        const SUPABASE_URL = 'https://sgzgblsirnorودulhper.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNnemdibHNpcm5vcm9kdWxocGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA2ODU2MDAsImV4cCI6MjA3NjI2MTYwMH0.nfFzi2lSvplXs7JoIMC-jdvqmxj_NpvVMYspPfGZWQs';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let currentContentId = null;
+
+        // URL에서 ID 파라미터 가져오기
+        function getContentId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        // 아코디언 토글
+        function toggleAccordion(accordionId) {
+            const accordion = document.getElementById(accordionId);
+            const header = accordion.querySelector('.accordion-header');
+            const content = accordion.querySelector('.accordion-content');
+            
+            header.classList.toggle('active');
+            content.classList.toggle('open');
+        }
+
+        // 태그 생성 함수
+        function createTags(container, data) {
+            container.innerHTML = '';
+            if (!data || data.length === 0) {
+                container.innerHTML = '<span class="info-value">-</span>';
+                return;
+            }
+            
+            const items = Array.isArray(data) ? data : [data];
+            items.forEach(item => {
+                if (item) {
+                    const tag = document.createElement('span');
+                    tag.className = 'tag';
+                    tag.textContent = item;
+                    container.appendChild(tag);
+                }
+            });
+        }
+
+        // 데이터 로드
+        async function loadContent() {
+            currentContentId = getContentId();
+            
+            if (!currentContentId) {
+                alert('주제 ID가 없습니다.');
+                window.location.href = 'search.html';
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase
+                    .from('content')
+                    .select('*')
+                    .eq('id', currentContentId)
+                    .single();
+
+                if (error) throw error;
+
+                if (data) {
+                    displayContent(data);
+                } else {
+                    alert('주제를 찾을 수 없습니다.');
+                    window.location.href = 'search.html';
+                }
+            } catch (error) {
+                console.error('Error loading content:', error);
+                alert('데이터를 불러오는 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 데이터 표시
+        function displayContent(data) {
+            document.getElementById('loadingMessage').style.display = 'none';
+            document.getElementById('contentContainer').style.display = 'block';
+
+            document.getElementById('contentTitle').textContent = data.name || '제목 없음';
+            
+            createTags(document.getElementById('categoryTags'), data.category);
+            createTags(document.getElementById('highContentTags'), data.high_content);
+            createTags(document.getElementById('relevanceContentTags'), data.relevance_content);
+            
+            document.getElementById('useStatus').textContent = data.use ? 'O' : 'X';
+            document.getElementById('usTime').textContent = data.us_time || '-';
+            document.getElementById('usSubject').textContent = data.us_subject || '-';
+            document.getElementById('usContentM').textContent = data.us_content_m || '-';
+            
+            createTags(document.getElementById('relevanceUsContentTags'), data.relevance_us_content);
+            
+            document.getElementById('detailContent').textContent = data.detail || '-';
+            document.getElementById('linkSite').textContent = data.link_site || '-';
+            document.getElementById('additional').textContent = data.additional || '-';
+
+            // 파일 링크 처리
+            if (data.file) {
+                document.getElementById('fileRow').style.display = 'block';
+                document.getElementById('fileLink').href = data.file;
+            }
+        }
+
+        // 수정 페이지로 이동
+        function editContent() {
+            if (confirm('이 주제를 수정하시겠습니까?')) {
+                window.location.href = `edit_content.html?id=${currentContentId}`;
+            }
+        }
+
+        // 삭제 모달 표시
+        function showDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'block';
+        }
+
+        // 삭제 모달 닫기
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+
+        // 삭제 실행
+        async function deleteContent() {
+            try {
+                const { error } = await supabase
+                    .from('content')
+                    .delete()
+                    .eq('id', currentContentId);
+
+                if (error) throw error;
+
+                alert('주제가 삭제되었습니다.');
+                window.location.href = 'search.html';
+            } catch (error) {
+                console.error('Error deleting content:', error);
+                alert('삭제 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 모달 외부 클릭시 닫기
+        window.onclick = function(event) {
+            const modal = document.getElementById('deleteModal');
+            if (event.target === modal) {
+                closeDeleteModal();
+            }
+        }
+
+        // 페이지 로드시 데이터 로드
+        window.addEventListener('DOMContentLoaded', loadContent);
+    </script>
+</body>
+</html>
