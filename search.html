@@ -322,7 +322,529 @@
             margin-top: 1rem;
         }
 
-        /* 반응형 디자인 */
+        /* 팝업 스타일 */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9998;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .popup-overlay.active {
+            display: block;
+        }
+
+        .popup-window {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 90%;
+            max-width: 900px;
+            height: 85vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            animation: popupSlideIn 0.3s ease forwards;
+            overflow: hidden;
+        }
+
+        @keyframes popupSlideIn {
+            from {
+                transform: translate(-50%, -50%) scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px 20px 0 0;
+            flex-shrink: 0;
+        }
+
+        .popup-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .popup-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .popup-control-btn {
+            width: 35px;
+            height: 35px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .popup-control-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .popup-content {
+            padding: 2rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .popup-content::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .popup-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .popup-content::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        .popup-content::-webkit-scrollbar-thumb:hover {
+            background: #5568d3;
+        }
+
+        .detail-section-popup {
+            margin-bottom: 2rem;
+        }
+
+        .detail-label-popup {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .detail-value-popup {
+            color: #333;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            padding: 0.5rem 0;
+        }
+
+        .popup-divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 1.5rem 0;
+        }
+
+        .popup-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .popup-badge.used {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .popup-badge.unused {
+            background: #fce4ec;
+            color: #c2185b;
+        }
+
+        .popup-accordion {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .popup-accordion-header {
+            background: #f8f9fa;
+            padding: 1.2rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .popup-accordion-header:hover {
+            background: #e9ecef;
+        }
+
+        .popup-accordion-header.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .popup-accordion-icon {
+            transition: transform 0.3s;
+            font-size: 1.2rem;
+        }
+
+        .popup-accordion-header.active .popup-accordion-icon {
+            transform: rotate(180deg);
+        }
+
+        .popup-accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+            background: white;
+        }
+
+        .popup-accordion-content.active {
+            max-height: 2000px;
+        }
+
+        .popup-accordion-body {
+            padding: 2rem 1.5rem;
+        }
+
+        .popup-button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #e0e0e0;
+            flex-wrap: wrap;
+        }
+
+        .popup-btn {
+            padding: 0.9rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .popup-btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .popup-btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .popup-btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .popup-btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+
+        .popup-btn-file {
+            background: #28a745;
+            color: white;
+        }
+
+        .popup-btn-file:hover {
+            background: #218838;
+        }
+
+        .popup-minimized {
+            transform: translate(-50%, -50%) scale(0.3);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .popup-maximized {
+            width: 95vw;
+            height: 95vh;
+            max-width: none;
+        }
+
+        /* 삭제 확인 모달 */
+        .delete-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .delete-modal.active {
+            display: flex;
+        }
+
+        .delete-modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 2.5rem;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .delete-modal-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .delete-modal-body {
+            color: #666;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .delete-modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        /* 수정 팝업 스타일 */
+        .edit-popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10001;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .edit-popup-overlay.active {
+            display: block;
+        }
+
+        .edit-popup-window {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 90%;
+            max-width: 1000px;
+            height: 90vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            z-index: 10002;
+            display: flex;
+            flex-direction: column;
+            animation: popupSlideIn 0.3s ease forwards;
+            overflow: hidden;
+        }
+
+        .edit-popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border-radius: 20px 20px 0 0;
+            flex-shrink: 0;
+        }
+
+        .edit-popup-content {
+            padding: 2rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .edit-form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .edit-form-label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .edit-form-input,
+        .edit-form-textarea,
+        .edit-form-select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .edit-form-input:focus,
+        .edit-form-textarea:focus,
+        .edit-form-select:focus {
+            outline: none;
+            border-color: #28a745;
+        }
+
+        .edit-form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .edit-form-checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .edit-form-checkbox {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        .edit-form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .edit-form-help {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.3rem;
+        }
+
+        .edit-button-group {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem 2rem;
+            background: #f8f9fa;
+            border-radius: 0 0 20px 20px;
+            flex-shrink: 0;
+        }
+
+        .edit-btn {
+            padding: 0.9rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .edit-btn-save {
+            background: #28a745;
+            color: white;
+        }
+
+        .edit-btn-save:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .edit-btn-cancel {
+            background: #6c757d;
+            color: white;
+        }
+
+        .edit-btn-cancel:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .edit-form-row {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .edit-button-group {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .popup-window {
+                width: 95%;
+                height: 90vh;
+            }
+
+            .popup-header {
+                padding: 1rem 1.5rem;
+            }
+
+            .popup-title {
+                font-size: 1.2rem;
+            }
+
+            .popup-content {
+                padding: 1.5rem;
+            }
+
+            .popup-button-group {
+                flex-direction: column;
+            }
+
+            .popup-btn {
+                width: 100%;
+            }
+        }
         @media (max-width: 1200px) {
             .carousel-grid {
                 grid-template-columns: repeat(3, 1fr);
@@ -447,6 +969,128 @@
         </div>
     </div>
 
+    <!-- 상세 정보 팝업 -->
+    <div id="popupOverlay" class="popup-overlay" onclick="closePopup()"></div>
+    <div id="popupWindow" class="popup-window">
+        <div class="popup-header">
+            <div class="popup-title" id="popupTitle">주제 상세 정보</div>
+            <div class="popup-controls">
+                <button class="popup-control-btn" onclick="minimizePopup()" title="최소화">−</button>
+                <button class="popup-control-btn" onclick="toggleMaximize()" title="최대화">□</button>
+                <button class="popup-control-btn" onclick="closePopup()" title="닫기">✕</button>
+            </div>
+        </div>
+        <div class="popup-content" id="popupContent">
+            <!-- 상세 내용이 동적으로 추가됩니다 -->
+        </div>
+    </div>
+
+    <!-- 삭제 확인 모달 -->
+    <div id="deleteModal" class="delete-modal">
+        <div class="delete-modal-content">
+            <div class="delete-modal-header">⚠️ 삭제 확인</div>
+            <div class="delete-modal-body">
+                정말로 이 주제를 삭제하시겠습니까?<br>
+                삭제된 데이터는 복구할 수 없습니다.
+            </div>
+            <div class="delete-modal-buttons">
+                <button class="btn btn-secondary" onclick="closeDeleteModal()">취소</button>
+                <button class="btn btn-danger" onclick="confirmDelete()">삭제</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 수정 팝업 -->
+    <div id="editPopupOverlay" class="edit-popup-overlay" onclick="closeEditPopup()"></div>
+    <div id="editPopupWindow" class="edit-popup-window">
+        <div class="edit-popup-header">
+            <div class="popup-title">주제 수정</div>
+            <div class="popup-controls">
+                <button class="popup-control-btn" onclick="closeEditPopup()" title="닫기">✕</button>
+            </div>
+        </div>
+        <div class="edit-popup-content">
+            <form id="editForm">
+                <div class="edit-form-group">
+                    <label class="edit-form-label">제목 *</label>
+                    <input type="text" id="edit_name" class="edit-form-input" required>
+                </div>
+
+                <div class="edit-form-row">
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">카테고리</label>
+                        <input type="text" id="edit_category" class="edit-form-input" placeholder="쉼표로 구분">
+                        <div class="edit-form-help">예: 과학, 수학, 물리</div>
+                    </div>
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">사용과목</label>
+                        <input type="text" id="edit_us_subject" class="edit-form-input">
+                    </div>
+                </div>
+
+                <div class="edit-form-row">
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">상위개념</label>
+                        <input type="text" id="edit_high_content" class="edit-form-input" placeholder="쉼표로 구분">
+                    </div>
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">연관주제</label>
+                        <input type="text" id="edit_relevance_content" class="edit-form-input" placeholder="쉼표로 구분">
+                    </div>
+                </div>
+
+                <div class="edit-form-row">
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">사용학년학기</label>
+                        <input type="text" id="edit_us_time" class="edit-form-input">
+                    </div>
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">사용여부</label>
+                        <div class="edit-form-checkbox-group">
+                            <input type="checkbox" id="edit_use" class="edit-form-checkbox">
+                            <label for="edit_use">사용함</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="edit-form-group">
+                    <label class="edit-form-label">연관세특주제</label>
+                    <input type="text" id="edit_relevance_us_content" class="edit-form-input" placeholder="쉼표로 구분">
+                </div>
+
+                <div class="edit-form-group">
+                    <label class="edit-form-label">세특 내용</label>
+                    <textarea id="edit_us_content_m" class="edit-form-textarea"></textarea>
+                </div>
+
+                <div class="edit-form-group">
+                    <label class="edit-form-label">내용</label>
+                    <textarea id="edit_detail" class="edit-form-textarea"></textarea>
+                </div>
+
+                <div class="edit-form-row">
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">파일 URL</label>
+                        <input type="text" id="edit_file" class="edit-form-input">
+                    </div>
+                    <div class="edit-form-group">
+                        <label class="edit-form-label">사이트 링크</label>
+                        <input type="text" id="edit_link_site" class="edit-form-input">
+                    </div>
+                </div>
+
+                <div class="edit-form-group">
+                    <label class="edit-form-label">기타</label>
+                    <textarea id="edit_additional" class="edit-form-textarea" rows="3"></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="edit-button-group">
+            <button class="edit-btn edit-btn-save" onclick="saveEdit()">💾 저장</button>
+            <button class="edit-btn edit-btn-cancel" onclick="closeEditPopup()">취소</button>
+        </div>
+    </div>
+
     <script>
         // Supabase 초기화
         const SUPABASE_URL = 'https://sgzgblsirnorodulhper.supabase.co';
@@ -466,6 +1110,8 @@
         let filteredContents = [];
         let currentPage = 1;
         const itemsPerPage = 12; // 4열 × 3행
+        let currentDetailContent = null;
+        let isMaximized = false;
 
         // 페이지 로드 시 데이터 가져오기
         async function loadContents() {
@@ -611,7 +1257,7 @@
                 const useBadgeText = isUsed ? '사용함' : '미사용';
 
                 return `
-                    <div class="content-card" onclick="goToDetail(${content.id})">
+                    <div class="content-card" onclick="goToDetail('${content.id}')">
                         <div class="card-title">${content.name || '제목 없음'}</div>
                         <span class="use-badge ${useBadgeClass}">${useBadgeText}</span>
                         <div class="card-info">
@@ -654,9 +1300,369 @@
             }
         }
 
-        // 상세페이지로 이동
-        function goToDetail(id) {
-            window.location.href = `detail_content.html?id=${id}`;
+        // 상세페이지로 이동 -> 팝업 열기로 변경
+        async function goToDetail(id) {
+            console.log('클릭된 카드 ID:', id, '타입:', typeof id);
+            if (id !== null && id !== undefined) {
+                await openPopup(id);
+            } else {
+                console.error('유효하지 않은 ID:', id);
+                alert('유효하지 않은 주제입니다.');
+            }
+        }
+
+        // 팝업 열기
+        async function openPopup(id) {
+            try {
+                showMessage('데이터를 불러오는 중...');
+                
+                const { data, error } = await supabase
+                    .from('content')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (error) throw error;
+                
+                if (!data) {
+                    alert('데이터를 찾을 수 없습니다.');
+                    return;
+                }
+
+                currentDetailContent = data;
+                renderPopupContent(data);
+                
+                document.getElementById('popupOverlay').classList.add('active');
+                document.getElementById('popupWindow').style.display = 'flex';
+                document.body.style.overflow = 'hidden'; // 배경 스크롤 방지
+                
+                hideMessage();
+                
+            } catch (error) {
+                console.error('데이터 로딩 에러:', error);
+                alert('데이터를 불러오는데 실패했습니다.');
+            }
+        }
+
+        // 팝업 컨텐츠 렌더링
+        function renderPopupContent(content) {
+            const popupContent = document.getElementById('popupContent');
+            document.getElementById('popupTitle').textContent = content.name || '주제 상세 정보';
+            
+            // 배열 데이터 처리
+            const categories = Array.isArray(content.category) 
+                ? content.category.join(', ') 
+                : content.category || '-';
+            
+            const highContent = Array.isArray(content.high_content)
+                ? content.high_content.join(', ')
+                : content.high_content || '-';
+            
+            const relevanceContent = Array.isArray(content.relevance_content)
+                ? content.relevance_content.join(', ')
+                : content.relevance_content || '-';
+            
+            const relevanceUsContent = Array.isArray(content.relevance_us_content)
+                ? content.relevance_us_content.join(', ')
+                : content.relevance_us_content || '-';
+            
+            const isUsed = content.use === true;
+            const useStatusClass = isUsed ? 'used' : 'unused';
+            const useStatusText = isUsed ? 'O' : 'X';
+
+            popupContent.innerHTML = `
+                <div class="detail-section-popup">
+                    <div class="detail-label-popup">카테고리</div>
+                    <div class="detail-value-popup">${categories}</div>
+                </div>
+
+                <div style="display: flex; gap: 2rem; flex-wrap: wrap; margin-bottom: 2rem;">
+                    <div style="flex: 1; min-width: 200px;">
+                        <div class="detail-label-popup">상위개념</div>
+                        <div class="detail-value-popup">${highContent}</div>
+                    </div>
+                    <div style="flex: 1; min-width: 200px;">
+                        <div class="detail-label-popup">연관주제</div>
+                        <div class="detail-value-popup">${relevanceContent}</div>
+                    </div>
+                </div>
+
+                <div class="popup-divider"></div>
+
+                <div class="detail-section-popup">
+                    <div class="detail-label-popup">사용여부</div>
+                    <span class="popup-badge ${useStatusClass}">${useStatusText}</span>
+                </div>
+
+                ${isUsed ? `
+                    <div class="popup-accordion">
+                        <div class="popup-accordion-header" onclick="togglePopupAccordion('usage')">
+                            <span>사용 정보 보기</span>
+                            <span class="popup-accordion-icon">▼</span>
+                        </div>
+                        <div class="popup-accordion-content" id="usageAccordion">
+                            <div class="popup-accordion-body">
+                                <div style="display: flex; gap: 2rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                                    <div style="flex: 1; min-width: 200px;">
+                                        <div class="detail-label-popup">사용학년학기</div>
+                                        <div class="detail-value-popup">${content.us_time || '-'}</div>
+                                    </div>
+                                    <div style="flex: 1; min-width: 200px;">
+                                        <div class="detail-label-popup">사용과목</div>
+                                        <div class="detail-value-popup">${content.us_subject || '-'}</div>
+                                    </div>
+                                </div>
+                                <div class="detail-section-popup">
+                                    <div class="detail-label-popup">세특 내용</div>
+                                    <div class="detail-value-popup">${content.us_content_m || '-'}</div>
+                                </div>
+                                <div class="detail-section-popup">
+                                    <div class="detail-label-popup">연관세특주제</div>
+                                    <div class="detail-value-popup">${relevanceUsContent}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ` : ''}
+
+                <div class="popup-accordion">
+                    <div class="popup-accordion-header" onclick="togglePopupAccordion('detail')">
+                        <span>상세 보기</span>
+                        <span class="popup-accordion-icon">▼</span>
+                    </div>
+                    <div class="popup-accordion-content" id="detailAccordion">
+                        <div class="popup-accordion-body">
+                            ${content.file ? `
+                                <div class="detail-section-popup">
+                                    <button class="popup-btn popup-btn-file" onclick="openFile('${content.file}')">📁 파일 열기</button>
+                                </div>
+                            ` : ''}
+                            <div class="detail-section-popup">
+                                <div class="detail-label-popup">내용</div>
+                                <div class="detail-value-popup">${content.detail || '-'}</div>
+                            </div>
+                            ${content.link_site ? `
+                                <div class="detail-section-popup">
+                                    <div class="detail-label-popup">사이트</div>
+                                    <div class="detail-value-popup">
+                                        <a href="${content.link_site}" target="_blank" style="color: #667eea; text-decoration: underline;">
+                                            ${content.link_site}
+                                        </a>
+                                    </div>
+                                </div>
+                            ` : ''}
+                            <div class="detail-section-popup">
+                                <div class="detail-label-popup">기타</div>
+                                <div class="detail-value-popup">${content.additional || '-'}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="popup-button-group">
+                    <button class="popup-btn popup-btn-primary" onclick="goToEdit()">✏️ 수정</button>
+                    <button class="popup-btn popup-btn-danger" onclick="openDeleteModal()">🗑️ 삭제</button>
+                </div>
+            `;
+        }
+
+        // 팝업 아코디언 토글
+        function togglePopupAccordion(type) {
+            const accordionId = type === 'usage' ? 'usageAccordion' : 'detailAccordion';
+            const accordion = document.getElementById(accordionId);
+            const header = accordion.previousElementSibling;
+            
+            header.classList.toggle('active');
+            accordion.classList.toggle('active');
+        }
+
+        // 팝업 닫기
+        function closePopup() {
+            document.getElementById('popupOverlay').classList.remove('active');
+            document.getElementById('popupWindow').style.display = 'none';
+            document.body.style.overflow = ''; // 배경 스크롤 복원
+            isMaximized = false;
+            document.getElementById('popupWindow').classList.remove('popup-maximized');
+        }
+
+        // 팝업 최소화
+        function minimizePopup() {
+            const popup = document.getElementById('popupWindow');
+            popup.classList.toggle('popup-minimized');
+        }
+
+        // 팝업 최대화/복원
+        function toggleMaximize() {
+            const popup = document.getElementById('popupWindow');
+            isMaximized = !isMaximized;
+            if (isMaximized) {
+                popup.classList.add('popup-maximized');
+            } else {
+                popup.classList.remove('popup-maximized');
+            }
+        }
+
+        // 파일 열기
+        function openFile(fileUrl) {
+            if (fileUrl) {
+                window.open(fileUrl, '_blank');
+            } else {
+                alert('파일이 없습니다.');
+            }
+        }
+
+        // 수정 페이지로 이동 -> 수정 팝업 열기로 변경
+        function goToEdit() {
+            if (currentDetailContent) {
+                openEditPopup();
+            }
+        }
+
+        // 수정 팝업 열기
+        function openEditPopup() {
+            if (!currentDetailContent) return;
+            
+            const content = currentDetailContent;
+            
+            // 폼 필드 채우기
+            document.getElementById('edit_name').value = content.name || '';
+            
+            // 배열 데이터를 쉼표로 구분된 문자열로 변환
+            document.getElementById('edit_category').value = Array.isArray(content.category) 
+                ? content.category.join(', ') 
+                : content.category || '';
+            
+            document.getElementById('edit_high_content').value = Array.isArray(content.high_content)
+                ? content.high_content.join(', ')
+                : content.high_content || '';
+            
+            document.getElementById('edit_relevance_content').value = Array.isArray(content.relevance_content)
+                ? content.relevance_content.join(', ')
+                : content.relevance_content || '';
+            
+            document.getElementById('edit_relevance_us_content').value = Array.isArray(content.relevance_us_content)
+                ? content.relevance_us_content.join(', ')
+                : content.relevance_us_content || '';
+            
+            document.getElementById('edit_use').checked = content.use === true;
+            document.getElementById('edit_us_subject').value = content.us_subject || '';
+            document.getElementById('edit_us_time').value = content.us_time || '';
+            document.getElementById('edit_us_content_m').value = content.us_content_m || '';
+            document.getElementById('edit_detail').value = content.detail || '';
+            document.getElementById('edit_file').value = content.file || '';
+            document.getElementById('edit_additional').value = content.additional || '';
+            document.getElementById('edit_link_site').value = content.link_site || '';
+            
+            // 팝업 열기
+            document.getElementById('editPopupOverlay').classList.add('active');
+            document.getElementById('editPopupWindow').style.display = 'flex';
+        }
+
+        // 수정 팝업 닫기
+        function closeEditPopup() {
+            document.getElementById('editPopupOverlay').classList.remove('active');
+            document.getElementById('editPopupWindow').style.display = 'none';
+        }
+
+        // 수정 저장
+        async function saveEdit() {
+            if (!currentDetailContent) return;
+            
+            const formData = {
+                name: document.getElementById('edit_name').value.trim(),
+                category: document.getElementById('edit_category').value
+                    .split(',')
+                    .map(s => s.trim())
+                    .filter(s => s),
+                high_content: document.getElementById('edit_high_content').value
+                    .split(',')
+                    .map(s => s.trim())
+                    .filter(s => s),
+                relevance_content: document.getElementById('edit_relevance_content').value
+                    .split(',')
+                    .map(s => s.trim())
+                    .filter(s => s),
+                relevance_us_content: document.getElementById('edit_relevance_us_content').value
+                    .split(',')
+                    .map(s => s.trim())
+                    .filter(s => s),
+                use: document.getElementById('edit_use').checked,
+                us_subject: document.getElementById('edit_us_subject').value.trim() || null,
+                us_time: document.getElementById('edit_us_time').value.trim() || null,
+                us_content_m: document.getElementById('edit_us_content_m').value.trim() || null,
+                detail: document.getElementById('edit_detail').value.trim() || null,
+                file: document.getElementById('edit_file').value.trim() || null,
+                additional: document.getElementById('edit_additional').value.trim() || null,
+                link_site: document.getElementById('edit_link_site').value.trim() || null
+            };
+            
+            // 필수 필드 검증
+            if (!formData.name) {
+                alert('제목은 필수 항목입니다.');
+                return;
+            }
+            
+            try {
+                const { data, error } = await supabase
+                    .from('content')
+                    .update(formData)
+                    .eq('id', currentDetailContent.id)
+                    .select()
+                    .single();
+                
+                if (error) throw error;
+                
+                alert('수정되었습니다.');
+                
+                // 현재 상세 정보 업데이트
+                currentDetailContent = data;
+                
+                // 상세 팝업 다시 렌더링
+                renderPopupContent(data);
+                
+                // 수정 팝업 닫기
+                closeEditPopup();
+                
+                // 목록 새로고침
+                loadContents();
+                
+            } catch (error) {
+                console.error('수정 에러:', error);
+                alert('수정에 실패했습니다: ' + error.message);
+            }
+        }
+
+        // 삭제 모달 열기
+        function openDeleteModal() {
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        // 삭제 모달 닫기
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+        }
+
+        // 삭제 확인
+        async function confirmDelete() {
+            if (!currentDetailContent) return;
+            
+            try {
+                const { error } = await supabase
+                    .from('content')
+                    .delete()
+                    .eq('id', currentDetailContent.id);
+
+                if (error) throw error;
+
+                alert('삭제되었습니다.');
+                closeDeleteModal();
+                closePopup();
+                loadContents(); // 목록 새로고침
+                
+            } catch (error) {
+                console.error('삭제 에러:', error);
+                alert('삭제에 실패했습니다.');
+            }
         }
 
         // 메시지 표시/숨김

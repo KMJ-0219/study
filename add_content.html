@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주제 추가</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+        }
+
+        header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        nav {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #555;
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            background: #f8f9fa;
+        }
+
+        nav a:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        nav a.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .form-title {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            padding: 0.8rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .tag-input-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 0.8rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            min-height: 45px;
+            cursor: text;
+            transition: all 0.3s ease;
+        }
+
+        .tag-input-container:focus-within {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .tag {
+            background: #667eea;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .tag-remove {
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            line-height: 1;
+        }
+
+        .tag-remove:hover {
+            opacity: 0.7;
+        }
+
+        .tag-input {
+            border: none;
+            outline: none;
+            flex: 1;
+            min-width: 120px;
+            font-size: 1rem;
+            padding: 0.2rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        button {
+            padding: 0.9rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #e1e8ed;
+            color: #555;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d8dd;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .success-message {
+            background: #efe;
+            color: #3c3;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .helper-text {
+            font-size: 0.85rem;
+            color: #777;
+            margin-top: 0.3rem;
+        }
+
+        /* 모달 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-icon.success {
+            color: #4caf50;
+        }
+
+        .modal-icon.error {
+            color: #f44336;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .modal-message {
+            color: #666;
+            margin-bottom: 1.5rem;
+            white-space: pre-line;
+        }
+
+        .modal-button {
+            background: #667eea;
+            color: white;
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-button:hover {
+            background: #5568d3;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            nav {
+                gap: 0.3rem;
+            }
+
+            nav a {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .container {
+                padding: 0 1rem;
+                margin: 1rem auto;
+            }
+
+            .form-container {
+                padding: 1.5rem;
+            }
+
+            .form-title {
+                font-size: 1.5rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.2rem;
+            }
+
+            nav a {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.85rem;
+            }
+
+            .form-title {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>HOMEPAGE</h1>
+            <nav>
+                <a href="index.html">홈페이지</a>
+                <a href="profile.html">프로파일링</a>
+                <a href="search.html">주제 찾기</a>
+                <a href="add_content.html" class="active">주제 추가</a>
+                <a href="tool.html">작업 사이트</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="form-container">
+            <h2 class="form-title">새 주제 추가</h2>
+            
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+
+            <form id="addContentForm">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="name">제목 *</label>
+                        <input type="text" id="name" required>
+                        <span class="helper-text">필수 입력 항목입니다. 중복되지 않는 고유한 제목을 입력하세요.</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">카테고리</label>
+                        <div class="tag-input-container" id="categoryContainer">
+                            <input type="text" class="tag-input" id="categoryInput" placeholder="카테고리 입력 후 Enter">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="high_content">상위개념</label>
+                        <div class="tag-input-container" id="highContentContainer">
+                            <input type="text" class="tag-input" id="highContentInput" placeholder="상위개념 입력 후 Enter">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="relevance_content">연관주제</label>
+                        <div class="tag-input-container" id="relevanceContentContainer">
+                            <input type="text" class="tag-input" id="relevanceContentInput" placeholder="연관주제 입력 후 Enter">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="use">사용여부</label>
+                        <select id="use">
+                            <option value="false">미사용</option>
+                            <option value="true">사용</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="us_subject">사용과목</label>
+                        <input type="text" id="us_subject" placeholder="예: 수학, 과학">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="us_time">사용학년학기</label>
+                        <input type="text" id="us_time" placeholder="예: 1학년 1학기">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="relevance_us_content">연관세특주제</label>
+                        <div class="tag-input-container" id="relevanceUsContentContainer">
+                            <input type="text" class="tag-input" id="relevanceUsContentInput" placeholder="연관세특주제 입력 후 Enter">
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="us_content_m">세특내용</label>
+                        <textarea id="us_content_m" placeholder="세부능력 및 특기사항 내용을 입력하세요"></textarea>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="detail">내용</label>
+                        <textarea id="detail" placeholder="주제에 대한 상세 내용을 입력하세요"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="file">파일</label>
+                        <input type="text" id="file" placeholder="파일 경로 또는 URL">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="link_site">사이트</label>
+                        <input type="text" id="link_site" placeholder="관련 웹사이트 URL">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="additional">기타</label>
+                        <textarea id="additional" placeholder="추가 정보를 입력하세요"></textarea>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-secondary" onclick="resetForm()">초기화</button>
+                    <button type="submit" class="btn-primary" id="submitBtn">저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 모달 -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-icon" id="modalIcon">✓</div>
+            <div class="modal-title" id="modalTitle">저장 완료</div>
+            <div class="modal-message" id="modalMessage">주제가 성공적으로 저장되었습니다!</div>
+            <button class="modal-button" onclick="closeModal()">확인</button>
+        </div>
+    </div>
+
+    <script>
+        // Supabase 초기화
+        const SUPABASE_URL = 'https://sgzgblsirnorodulhper.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNnemdibHNpcm5vcm9kdWxocGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA2ODU2MDAsImV4cCI6MjA3NjI2MTYwMH0.nfFzi2lSvplXs7JoIMC-jdvqmxj_NpvVMYspPfGZWQs';
+        
+        console.log('Supabase 초기화 시작...');
+        console.log('URL:', SUPABASE_URL);
+        console.log('KEY:', SUPABASE_KEY.substring(0, 20) + '...');
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        console.log('Supabase 클라이언트 생성 완료');
+
+        let savedContentId = null;
+
+        // 태그 입력 기능
+        function setupTagInput(containerId, inputId) {
+            const container = document.getElementById(containerId);
+            const input = document.getElementById(inputId);
+            const tags = [];
+
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (input.value.trim()) {
+                        const value = input.value.trim();
+                        if (!tags.includes(value)) {
+                            tags.push(value);
+                            addTag(value);
+                        }
+                        input.value = '';
+                    }
+                }
+            });
+
+            function addTag(value) {
+                const tag = document.createElement('div');
+                tag.className = 'tag';
+                tag.innerHTML = `
+                    <span>${value}</span>
+                    <span class="tag-remove" onclick="removeTag(this, '${containerId}', '${value}')">×</span>
+                `;
+                container.insertBefore(tag, input);
+            }
+
+            container.getTags = () => tags;
+            container.removeTag = (value) => {
+                const index = tags.indexOf(value);
+                if (index > -1) {
+                    tags.splice(index, 1);
+                }
+            };
+        }
+
+        function removeTag(element, containerId, value) {
+            element.parentElement.remove();
+            document.getElementById(containerId).removeTag(value);
+        }
+
+        // 태그 입력 초기화
+        setupTagInput('categoryContainer', 'categoryInput');
+        setupTagInput('highContentContainer', 'highContentInput');
+        setupTagInput('relevanceContentContainer', 'relevanceContentInput');
+        setupTagInput('relevanceUsContentContainer', 'relevanceUsContentInput');
+
+        // 폼 초기화
+        function resetForm() {
+            document.getElementById('addContentForm').reset();
+            document.querySelectorAll('.tag').forEach(tag => tag.remove());
+            hideMessages();
+        }
+
+        // 메시지 표시 함수
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => errorDiv.style.display = 'none', 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            setTimeout(() => successDiv.style.display = 'none', 3000);
+        }
+
+        function hideMessages() {
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        // 모달 함수
+        function showModal(type, title, message) {
+            const modal = document.getElementById('modal');
+            const modalIcon = document.getElementById('modalIcon');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+
+            if (type === 'success') {
+                modalIcon.textContent = '✓';
+                modalIcon.className = 'modal-icon success';
+            } else {
+                modalIcon.textContent = '✕';
+                modalIcon.className = 'modal-icon error';
+            }
+
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            modal.classList.add('show');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            modal.classList.remove('show');
+            
+            // 성공 모달이었다면 폼 초기화
+            if (savedContentId) {
+                savedContentId = null;
+                resetForm();
+            }
+        }
+
+        // 폼 제출
+        document.getElementById('addContentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            hideMessages();
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '저장 중...';
+
+            const name = document.getElementById('name').value.trim();
+
+            console.log('폼 제출 시작...');
+            console.log('제목:', name);
+
+            // 제목 검증
+            if (!name) {
+                console.error('제목 누락');
+                showModal('error', '입력 오류', '제목은 필수 입력 항목입니다.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = '저장';
+                return;
+            }
+
+            try {
+                console.log('중복 체크 시작...');
+                // 중복 체크
+                const { data: existingData, error: checkError } = await supabase
+                    .from('content')
+                    .select('name')
+                    .eq('name', name);
+
+                console.log('중복 체크 결과:', { existingData, checkError });
+
+                if (checkError) {
+                    console.error('중복 체크 오류:', checkError);
+                    showModal('error', '데이터베이스 오류', '중복 체크 중 오류가 발생했습니다:\n' + JSON.stringify(checkError));
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '저장';
+                    return;
+                }
+
+                if (existingData && existingData.length > 0) {
+                    console.warn('중복된 제목 발견');
+                    showModal('error', '중복 오류', '이미 존재하는 제목입니다. 다른 제목을 입력해주세요.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '저장';
+                    return;
+                }
+
+                // 데이터 수집
+                const formData = {
+                    name: name,
+                    category: document.getElementById('categoryContainer').getTags(),
+                    high_content: document.getElementById('highContentContainer').getTags(),
+                    relevance_content: document.getElementById('relevanceContentContainer').getTags(),
+                    use: document.getElementById('use').value === 'true',
+                    us_subject: document.getElementById('us_subject').value.trim() || '',
+                    us_time: document.getElementById('us_time').value.trim() || '',
+                    relevance_us_content: document.getElementById('relevanceUsContentContainer').getTags(),
+                    us_content_m: document.getElementById('us_content_m').value.trim() || '',
+                    detail: document.getElementById('detail').value.trim() || '',
+                    file: document.getElementById('file').value.trim() || '',
+                    link_site: document.getElementById('link_site').value.trim() || '',
+                    additional: document.getElementById('additional').value.trim() || ''
+                };
+
+                console.log('저장할 데이터:', JSON.stringify(formData, null, 2));
+
+                // Supabase에 저장
+                console.log('데이터 저장 시작...');
+                const { data, error } = await supabase
+                    .from('content')
+                    .insert([formData])
+                    .select();
+
+                console.log('저장 응답:', { data, error });
+
+                if (error) {
+                    console.error('저장 오류 상세:', error);
+                    let errorMsg = error.message || '알 수 없는 오류';
+                    if (error.details) errorMsg += '\n상세: ' + error.details;
+                    if (error.hint) errorMsg += '\n힌트: ' + error.hint;
+                    showModal('error', '저장 실패', '저장 중 오류가 발생했습니다:\n' + errorMsg);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '저장';
+                    return;
+                }
+
+                if (!data || data.length === 0) {
+                    console.error('데이터가 반환되지 않음');
+                    showModal('error', '저장 실패', '데이터가 저장되지 않았습니다. 다시 시도해주세요.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '저장';
+                    return;
+                }
+
+                console.log('저장 성공! ID:', data[0].id);
+                savedContentId = data[0].id;
+                submitBtn.disabled = false;
+                submitBtn.textContent = '저장';
+                showModal('success', '저장 완료', '주제가 성공적으로 저장되었습니다!');
+                
+            } catch (err) {
+                console.error('예외 발생:', err);
+                console.error('스택:', err.stack);
+                showModal('error', '오류 발생', '예상치 못한 오류가 발생했습니다:\n' + err.message);
+                submitBtn.disabled = false;
+                submitBtn.textContent = '저장';
+            }
+        });
+
+        // 현재 페이지에 맞게 active 클래스 자동 설정
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+            const navLinks = document.querySelectorAll('nav a');
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
